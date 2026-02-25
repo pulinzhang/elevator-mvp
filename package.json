@@ -5,13 +5,23 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
+    "preview": "next-on-pages preview",
+    "deploy": "next-on-pages deploy",
+    "db:init": "node scripts/init-db.js",
+    "d1:local:create": "wrangler d1 create elevator-db --local",
+    "d1:local:init": "wrangler d1 execute elevator-db --local --file=schema.sql",
+    "d1:local:reset": "wrangler d1 execute elevator-db --local --file=schema.sql --force",
+    "d1:remote:create": "wrangler d1 create elevator-db",
+    "d1:remote:init": "wrangler d1 execute elevator-db --remote --file=schema.sql",
+    "d1:remote:reset": "wrangler d1 execute elevator-db --remote --file=schema.sql --force"
   },
   "dependencies": {
+    "@cloudflare/next-on-pages": "^1.13.16",
     "next": "16.1.6",
     "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react-dom": "19.2.3",
+    "wrangler": "^4.68.1",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -19,6 +29,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "babel-plugin-react-compiler": "1.0.0",
+    "better-sqlite3": "^12.6.2",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "tailwindcss": "^4",

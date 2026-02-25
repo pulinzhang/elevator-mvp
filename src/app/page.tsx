@@ -1,65 +1,191 @@
-import Image from "next/image";
+export const runtime = "edge";
 
 export default function Home() {
+  const features = [
+    {
+      title: "Live Pricing",
+      description: "Calculate elevator costs in real-time with accurate pricing based on your configuration.",
+      icon: "💰",
+    },
+    {
+      title: "Visual Configuration",
+      description: "Select from multiple manufacturers, models, and customization options visually.",
+      icon: "🎨",
+    },
+    {
+      title: "Instant Quote",
+      description: "Get immediate price quotes with detailed breakdowns and margin calculations.",
+      icon: "⚡",
+    },
+    {
+      title: "Cloud Deployment",
+      description: "Powered by Cloudflare Edge for global, low-latency performance.",
+      icon: "☁️",
+    },
+  ];
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div style={styles.container}>
+      {/* Header */}
+      <header style={styles.header}>
+        <div style={styles.logo}>ElevatorHub</div>
+        <nav style={styles.nav}>
+          <a href="/pricing" style={styles.navLink}>Pricing</a>
+          <a href="/admin" style={styles.navLink}>Admin</a>
+        </nav>
+      </header>
+
+      {/* Hero Section */}
+      <section style={styles.hero}>
+        <h1 style={styles.heroTitle}>Elevator Pricing System</h1>
+        <p style={styles.heroSubtitle}>
+          Professional elevator configuration and pricing solution built for the modern era.
+          Calculate, configure, and quote in seconds.
+        </p>
+        <a href="/pricing" style={styles.heroButton}>
+          Try Demo
+        </a>
+      </section>
+
+      {/* Features Section */}
+      <section style={styles.features}>
+        <h2 style={styles.featuresTitle}>Key Features</h2>
+        <div style={styles.featuresGrid}>
+          {features.map((feature, index) => (
+            <div key={index} style={styles.featureCard}>
+              <div style={styles.featureIcon}>{feature.icon}</div>
+              <h3 style={styles.featureTitle}>{feature.title}</h3>
+              <p style={styles.featureDescription}>{feature.description}</p>
+            </div>
+          ))}
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+      </section>
+
+      {/* Footer */}
+      <footer style={styles.footer}>
+        <p style={styles.footerText}>Powered by Cloudflare Edge</p>
+      </footer>
     </div>
   );
 }
+
+const styles: Record<string, React.CSSProperties> = {
+  container: {
+    minHeight: "100vh",
+    display: "flex",
+    flexDirection: "column",
+    fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+    backgroundColor: "#fafafa",
+  },
+  header: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: "20px 40px",
+    backgroundColor: "#fff",
+    borderBottom: "1px solid #e5e7eb",
+  },
+  logo: {
+    fontSize: "22px",
+    fontWeight: 700,
+    color: "#1a1a1a",
+    letterSpacing: "-0.5px",
+  },
+  nav: {
+    display: "flex",
+    gap: "24px",
+  },
+  navLink: {
+    fontSize: "15px",
+    fontWeight: 500,
+    color: "#6b7280",
+    textDecoration: "none",
+    transition: "color 0.2s",
+  },
+  hero: {
+    padding: "100px 40px",
+    textAlign: "center",
+    backgroundColor: "#fff",
+    borderBottom: "1px solid #e5e7eb",
+  },
+  heroTitle: {
+    fontSize: "52px",
+    fontWeight: 700,
+    color: "#1a1a1a",
+    margin: "0 0 20px 0",
+    letterSpacing: "-1px",
+    lineHeight: 1.1,
+  },
+  heroSubtitle: {
+    fontSize: "20px",
+    color: "#6b7280",
+    maxWidth: "600px",
+    margin: "0 auto 36px",
+    lineHeight: 1.6,
+  },
+  heroButton: {
+    display: "inline-block",
+    padding: "16px 40px",
+    fontSize: "16px",
+    fontWeight: 600,
+    color: "#fff",
+    backgroundColor: "#2563eb",
+    borderRadius: "8px",
+    textDecoration: "none",
+    transition: "background-color 0.2s, transform 0.2s",
+  },
+  features: {
+    padding: "80px 40px",
+    maxWidth: "1200px",
+    margin: "0 auto",
+    width: "100%",
+    boxSizing: "border-box",
+  },
+  featuresTitle: {
+    fontSize: "32px",
+    fontWeight: 600,
+    color: "#1a1a1a",
+    textAlign: "center",
+    margin: "0 0 48px",
+  },
+  featuresGrid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+    gap: "32px",
+  },
+  featureCard: {
+    padding: "32px",
+    backgroundColor: "#fff",
+    borderRadius: "12px",
+    border: "1px solid #e5e7eb",
+    textAlign: "center",
+  },
+  featureIcon: {
+    fontSize: "40px",
+    marginBottom: "16px",
+  },
+  featureTitle: {
+    fontSize: "20px",
+    fontWeight: 600,
+    color: "#1a1a1a",
+    margin: "0 0 12px",
+  },
+  featureDescription: {
+    fontSize: "15px",
+    color: "#6b7280",
+    lineHeight: 1.6,
+    margin: 0,
+  },
+  footer: {
+    marginTop: "auto",
+    padding: "24px 40px",
+    textAlign: "center",
+    borderTop: "1px solid #e5e7eb",
+    backgroundColor: "#fff",
+  },
+  footerText: {
+    fontSize: "14px",
+    color: "#9ca3af",
+    margin: 0,
+  },
+};
