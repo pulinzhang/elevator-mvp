@@ -22,9 +22,9 @@ export async function POST(request: Request, env: any) {
     const { customer_name, configuration_json, total_cost, selling_price, margin } = body;
 
     if (!configuration_json || selling_price === undefined || margin === undefined) {
-      return Response.json(
-        { error: 'Missing required fields: configuration_json, selling_price, margin' },
-        { status: 400 }
+      return new Response(
+        JSON.stringify({ error: 'Missing required fields: configuration_json, selling_price, margin' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
@@ -38,7 +38,10 @@ export async function POST(request: Request, env: any) {
         .bind(customer_name || null, configuration_json, total_cost || 0, selling_price, margin, created_at)
         .run();
 
-      return Response.json({ success: true, created_at });
+      return new Response(JSON.stringify({ success: true, created_at }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
     } else {
       // Use mock data
       const newQuote = {
@@ -51,11 +54,17 @@ export async function POST(request: Request, env: any) {
         created_at,
       };
       mockQuotes.push(newQuote);
-      return Response.json({ success: true, created_at });
+      return new Response(JSON.stringify({ success: true, created_at }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
     }
   } catch (error) {
     console.error('Quote save error:', error);
-    return Response.json({ error: 'Internal server error' }, { status: 500 });
+    return new Response(JSON.stringify({ error: 'Internal server error' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 }
 
@@ -68,14 +77,23 @@ export async function GET(request: Request, env: any) {
         'SELECT * FROM quotes ORDER BY id DESC LIMIT ?'
       ).bind(limit).all();
 
-      const rows = Array.isArray(result) ? result : result.results || [];
-      return Response.json(rows);
+      const rows = result.results || [];
+      return new Response(JSON.stringify(rows), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
     } else {
       // Use mock data
-      return Response.json(mockQuotes.slice(-limit).reverse());
+      return new Response(JSON.stringify(mockQuotes.slice(-limit).reverse()), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
     }
   } catch (error) {
     console.error('Quote fetch error:', error);
-    return Response.json({ error: 'Internal server error' }, { status: 500 });
+    return new Response(JSON.stringify({ error: 'Internal server error' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 }

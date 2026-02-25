@@ -13,15 +13,24 @@ export async function GET(request: Request, env: any) {
 
   try {
     if (useMock) {
-      return Response.json(mockConfig);
+      return new Response(JSON.stringify(mockConfig), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
     }
 
     const result = await env.DB.prepare("SELECT key, value FROM system_config").all();
     const configs = result.results || [];
-    return Response.json(configs);
+    return new Response(JSON.stringify(configs), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    });
   } catch (error) {
     console.error("Config GET error:", error);
-    return Response.json(mockConfig, { status: 200 });
+    return new Response(JSON.stringify(mockConfig), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 }
 
@@ -31,7 +40,10 @@ export async function POST(request: Request, env: any) {
   const { key, value } = body;
 
   if (!key || !value) {
-    return Response.json({ error: "Missing key or value" }, { status: 400 });
+    return new Response(JSON.stringify({ error: "Missing key or value" }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 
   try {
@@ -42,7 +54,10 @@ export async function POST(request: Request, env: any) {
       } else {
         mockConfig.push({ key, value });
       }
-      return Response.json({ success: true, key, value });
+      return new Response(JSON.stringify({ success: true, key, value }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
     }
 
     await env.DB.prepare(
@@ -51,10 +66,16 @@ export async function POST(request: Request, env: any) {
       .bind(key, value, value)
       .run();
 
-    return Response.json({ success: true, key, value });
+    return new Response(JSON.stringify({ success: true, key, value }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    });
   } catch (error) {
     console.error("Config POST error:", error);
-    return Response.json({ error: "Failed to update config" }, { status: 500 });
+    return new Response(JSON.stringify({ error: "Failed to update config" }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 }
 

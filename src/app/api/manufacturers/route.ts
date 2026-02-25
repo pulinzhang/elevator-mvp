@@ -18,15 +18,24 @@ export async function GET(request: Request, env: any) {
   try {
     if (!USE_MOCK_DATA && env.DB) {
       const result = await env.DB.prepare('SELECT * FROM manufacturers ORDER BY id').all();
-      const rows = Array.isArray(result) ? result : result.results || [];
-      return Response.json(rows);
+      const rows = result.results || [];
+      return new Response(JSON.stringify(rows), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
     } else {
       // Use mock data
-      return Response.json(mockManufacturersData);
+      return new Response(JSON.stringify(mockManufacturersData), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
     }
   } catch (error) {
     console.error('Error:', error);
-    return Response.json({ error: 'Internal server error' }, { status: 500 });
+    return new Response(JSON.stringify({ error: 'Internal server error' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 }
 
@@ -36,7 +45,10 @@ export async function POST(request: Request, env: any) {
     const { name } = body;
 
     if (!name) {
-      return Response.json({ error: 'Name is required' }, { status: 400 });
+      return new Response(JSON.stringify({ error: 'Name is required' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
     }
 
     if (!USE_MOCK_DATA && env.DB) {
@@ -44,15 +56,24 @@ export async function POST(request: Request, env: any) {
         'INSERT INTO manufacturers (name) VALUES (?)'
       ).bind(name).run();
 
-      return Response.json({ success: true, id: result.lastRowId });
+      return new Response(JSON.stringify({ success: true, id: result.lastRowId }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
     } else {
       // Use mock data
       const newManufacturer = { id: nextId++, name };
       mockManufacturersData.push(newManufacturer);
-      return Response.json({ success: true, id: newManufacturer.id });
+      return new Response(JSON.stringify({ success: true, id: newManufacturer.id }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
     }
   } catch (error) {
     console.error('Error:', error);
-    return Response.json({ error: 'Internal server error' }, { status: 500 });
+    return new Response(JSON.stringify({ error: 'Internal server error' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 }

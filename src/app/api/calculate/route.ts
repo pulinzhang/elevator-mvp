@@ -28,9 +28,9 @@ export async function POST(request: Request, env: any) {
     const { model_id, selected_options, margin } = body;
 
     if (!model_id || !selected_options || margin === undefined) {
-      return NextResponse.json(
-        { error: 'Missing required fields: model_id, selected_options, margin' },
-        { status: 400 }
+      return new Response(
+        JSON.stringify({ error: 'Missing required fields: model_id, selected_options, margin' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
@@ -45,13 +45,13 @@ export async function POST(request: Request, env: any) {
       ).bind(model_id).first();
 
       if (!modelResult) {
-        return NextResponse.json(
-          { error: 'Model not found' },
-          { status: 404 }
+        return new Response(
+          JSON.stringify({ error: 'Model not found' }),
+          { status: 404, headers: { 'Content-Type': 'application/json' } }
         );
       }
 
-      base_price = modelResult.base_price;
+      base_price = (modelResult as any).base_price;
 
       // Get prices for selected options
       if (selected_options.length > 0) {
@@ -60,16 +60,16 @@ export async function POST(request: Request, env: any) {
           `SELECT SUM(price) as total FROM configuration_options WHERE id IN (${placeholders})`
         ).bind(...selected_options).first();
 
-        options_total = optionsResult?.total || 0;
+        options_total = (optionsResult as any)?.total || 0;
       }
     } else {
       // Use mock data
       base_price = mockModelsData[model_id] || 0;
       
       if (!base_price) {
-        return NextResponse.json(
-          { error: 'Model not found' },
-          { status: 404 }
+        return new Response(
+          JSON.stringify({ error: 'Model not found' }),
+          { status: 404, headers: { 'Content-Type': 'application/json' } }
         );
       }
 
@@ -83,17 +83,20 @@ export async function POST(request: Request, env: any) {
     const total_cost = base_price + options_total;
     const selling_price = total_cost * (1 + margin / 100);
 
-    return NextResponse.json({
+    return new Response(JSON.stringify({
       base_price,
       options_total,
       total_cost,
       selling_price: Math.round(selling_price * 100) / 100
+    }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
     });
   } catch (error) {
     console.error('Calculate error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
+    return new Response(
+      JSON.stringify({ error: 'Internal server error' }),
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
   }
 }

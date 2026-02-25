@@ -42,9 +42,9 @@ export async function POST(request: Request, env: any) {
     const { data } = body as { data: ExcelData };
 
     if (!data || !data.Models || !Array.isArray(data.Models)) {
-      return NextResponse.json(
-        { error: 'Invalid data format. Expected Excel data with Models, Options sheets.' },
-        { status: 400 }
+      return new Response(
+        JSON.stringify({ error: 'Invalid data format. Expected Excel data with Models, Options sheets.' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
@@ -202,27 +202,33 @@ export async function POST(request: Request, env: any) {
       const uniqueModels = new Set(data.Models.map((r) => r["Model Code"]));
       const uniqueOptions = new Set(data.Options?.map((r) => `${r["Model Code"]}:${r["Option Name"]}`) || []);
       
-      return NextResponse.json({
+      return new Response(JSON.stringify({
         message: 'Data logged (mock mode)',
         manufacturers_created: uniqueManufacturers.size,
         models_created: uniqueModels.size,
         options_created: uniqueOptions.size,
         total_rows: (data.Models?.length || 0) + (data.Options?.length || 0),
+      }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
       });
     }
 
-    return NextResponse.json({
+    return new Response(JSON.stringify({
       message: 'Import completed successfully',
       manufacturers_created: manufacturersCreated,
       models_created: modelsCreated,
       options_created: optionsCreated,
       total_rows: (data.Models?.length || 0) + (data.Options?.length || 0),
+    }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
     });
   } catch (error) {
     console.error('Import error:', error);
-    return NextResponse.json(
-      { error: 'Failed to import data' },
-      { status: 500 }
+    return new Response(
+      JSON.stringify({ error: 'Failed to import data' }),
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
   }
 }

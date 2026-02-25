@@ -47,23 +47,35 @@ export async function GET(request: Request, env: any) {
     const modelId = url.searchParams.get('model_id');
 
     if (!modelId) {
-      return Response.json({ error: 'model_id is required' }, { status: 400 });
+      return new Response(JSON.stringify({ error: 'model_id is required' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
     }
 
     if (!USE_MOCK_DATA && env.DB) {
       const result = await env.DB.prepare(
         'SELECT * FROM configuration_options WHERE model_id = ? ORDER BY category, id'
       ).bind(Number(modelId)).all();
-      const rows = Array.isArray(result) ? result : result.results || [];
-      return Response.json(rows);
+      const rows = result.results || [];
+      return new Response(JSON.stringify(rows), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
     } else {
       // Use mock data
       const filtered = mockOptionsData.filter(o => o.model_id === Number(modelId));
-      return Response.json(filtered);
+      return new Response(JSON.stringify(filtered), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
     }
   } catch (error) {
     console.error('Error:', error);
-    return Response.json({ error: 'Internal server error' }, { status: 500 });
+    return new Response(JSON.stringify({ error: 'Internal server error' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 }
 
@@ -73,10 +85,10 @@ export async function POST(request: Request, env: any) {
     const { model_id, category, name, price } = body;
 
     if (!model_id || !category || !name || price === undefined) {
-      return Response.json(
-        { error: 'model_id, category, name, and price are required' },
-        { status: 400 }
-      );
+      return new Response(JSON.stringify({ error: 'model_id, category, name, and price are required' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
     }
 
     if (!USE_MOCK_DATA && env.DB) {
@@ -84,15 +96,24 @@ export async function POST(request: Request, env: any) {
         'INSERT INTO configuration_options (model_id, category, name, price) VALUES (?, ?, ?, ?)'
       ).bind(model_id, category, name, price).run();
 
-      return Response.json({ success: true, id: result.lastRowId });
+      return new Response(JSON.stringify({ success: true, id: result.lastRowId }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
     } else {
       // Use mock data
       const newOption = { id: nextId++, model_id, category, name, price };
       mockOptionsData.push(newOption);
-      return Response.json({ success: true, id: newOption.id });
+      return new Response(JSON.stringify({ success: true, id: newOption.id }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
     }
   } catch (error) {
     console.error('Error:', error);
-    return Response.json({ error: 'Internal server error' }, { status: 500 });
+    return new Response(JSON.stringify({ error: 'Internal server error' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 }
