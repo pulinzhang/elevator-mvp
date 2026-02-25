@@ -1,7 +1,16 @@
 export const runtime = 'edge';
 
-// Use real database in production (set USE_MOCK_DATA=true in .dev.vars for local development)
-const USE_MOCK_DATA = typeof process !== 'undefined' && process.env?.USE_MOCK_DATA === 'true';
+// Check if we should use mock data
+// In local dev, set USE_MOCK_DATA=true in .dev.vars
+// In production, if no DB binding, use mock data
+const shouldUseMockData = () => {
+  // If USE_MOCK_DATA is explicitly set to true
+  if (typeof process !== 'undefined' && process.env?.USE_MOCK_DATA === 'true') {
+    return true;
+  }
+  // In Edge runtime, if we can't determine, default to mock for safety
+  return false;
+};
 
 // Mock data for local development
 const mockManufacturers = [
@@ -15,23 +24,20 @@ let mockManufacturersData = [...mockManufacturers];
 let nextId = 5;
 
 export async function GET(request: Request, env: any) {
-  const debug = {
-    USE_MOCK_DATA,
-    hasDB: !!env.DB,
-    dbType: typeof env.DB,
-  };
-  console.log('[manufacturers] debug:', debug);
+  const USE_MOCK_DATA = shouldUseMockData();
+  const hasDB = !USE_MOCK_DATA && !!env.DB;
   
   try {
-    if (!USE_MOCK_DATA && env.DB) {
+    if (hasDB) {
       const result = await env.DB.prepare('SELECT * FROM manufacturers ORDER BY id').all();
       const rows = result.results || [];
-      return new Response(JSON.stringify({ debug, rows }), {
+      return new Response(JSON.stringify({ rows }), {
         status: 200,
         headers: { 'Content-Type': 'application/json' },
       });
     } else {
-      return new Response(JSON.stringify({ debug, mock: mockManufacturersData }), {
+      // Use mock data
+      return new Response(JSON.stringify(mockManufacturersData), {
         status: 200,
         headers: { 'Content-Type': 'application/json' },
       });
@@ -39,7 +45,7 @@ export async function GET(request: Request, env: any) {
   } catch (error) {
     const errorMsg = error instanceof Error ? error.message : String(error);
     console.error('[manufacturers] Error:', errorMsg);
-    return new Response(JSON.stringify({ debug, error: errorMsg }), {
+    return new Response(JSON.stringify({ error: 'Internal server error', details: errorMsg }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     });
@@ -47,6 +53,9 @@ export async function GET(request: Request, env: any) {
 }
 
 export async function POST(request: Request, env: any) {
+  const USE_MOCK_DATA = shouldUseMockData();
+  const hasDB = !USE_MOCK_DATA && !!env.DB;
+  
   try {
     const body = await request.json();
     const { name } = body;
@@ -58,7 +67,7 @@ export async function POST(request: Request, env: any) {
       });
     }
 
-    if (!USE_MOCK_DATA && env.DB) {
+    if (hasDB) {
       const result = await env.DB.prepare(
         'INSERT INTO manufacturers (name) VALUES (?)'
       ).bind(name).run();
@@ -77,8 +86,9 @@ export async function POST(request: Request, env: any) {
       });
     }
   } catch (error) {
-    console.error('Error:', error);
-    return new Response(JSON.stringify({ error: 'Internal server error' }), {
+    const errorMsg = error instanceof Error ? error.message : String(error);
+    console.error('[manufacturers] POST Error:', errorMsg);
+    return new Response(JSON.stringify({ error: 'Internal server error', details: errorMsg }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     });
