@@ -13,6 +13,7 @@ export async function GET(request: Request, env: any) {
 
   try {
     if (useMock) {
+      console.log('configs from useMock', mockConfig);
       return new Response(JSON.stringify(mockConfig), {
         status: 200,
         headers: { 'Content-Type': 'application/json' },
@@ -21,6 +22,7 @@ export async function GET(request: Request, env: any) {
 
     const result = await env.DB.prepare("SELECT key, value FROM system_config").all();
     const configs = result.results || [];
+    console.log('configs from DB1', configs);
     return new Response(JSON.stringify(configs), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
