@@ -1,5 +1,3 @@
-export const runtime = "edge";
-
 interface ConfigItem {
   key: string;
   value: string;

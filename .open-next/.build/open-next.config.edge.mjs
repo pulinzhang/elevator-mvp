@@ -1,5 +1,5 @@
 // open-next.config.ts
-var config = {
+var open_next_config_default = {
   default: {
     override: {
       wrapper: "cloudflare-node",
@@ -23,7 +23,6 @@ var config = {
     }
   }
 };
-var open_next_config_default = config;
 export {
   open_next_config_default as default
 };

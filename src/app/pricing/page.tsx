@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from "react";
 
-export const runtime = "edge";
-
 interface Manufacturer {
   id: number;
   name: string;

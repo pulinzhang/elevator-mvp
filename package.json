@@ -5,8 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "deploy": "npm run build && npx @cloudflare/next-on-pages && npx wrangler pages deploy .vercel/output/static --project-name=elevator-mvp",
-    "preview": "npx @cloudflare/next-on-pages --watch",
+    "deploy": "npx @opennextjs/cloudflare build && npx wrangler deploy",
     "d1:local:create": "wrangler d1 create elevator-db --local",
     "d1:local:init": "wrangler d1 execute elevator-db --local --file=schema.sql",
     "d1:local:reset": "wrangler d1 execute elevator-db --local --file=schema.sql --force",
@@ -15,11 +14,10 @@
     "d1:remote:reset": "wrangler d1 execute elevator-db --remote --file=schema.sql --force"
   },
   "dependencies": {
-    "@cloudflare/next-on-pages": "^1.13.1",
-    "esbuild": "^0.24.0",
-    "next": "15.2.4",
-    "react": "18.3.0",
-    "react-dom": "18.3.0",
+    "@opennextjs/cloudflare": "^1.17.1",
+    "next": "16.1.6",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
     "wrangler": "^4.68.1",
     "xlsx": "^0.18.5"
   },
@@ -31,7 +29,7 @@
     "@types/react-dom": "^19",
     "babel-plugin-react-compiler": "1.0.0",
     "eslint": "^9",
-    "eslint-config-next": "15.2.4",
+    "eslint-config-next": "16.1.6",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
