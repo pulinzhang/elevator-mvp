@@ -1,14 +1,12 @@
 name = "elevator-mvp"
-
+main = ".output/server/index.mjs"
 compatibility_date = "2026-02-25"
-
-pages_build_output_dir = ".vercel/output/static"
 
 # D1 数据库配置
 [[d1_databases]]
 binding = "DB"
 database_name = "elevator-db"
-database_id = "a6b043f2-0849-4b62-bede-e6526486bf91"  # 创建后替换为实际的 database_id
+database_id = "a6b043f2-0849-4b62-bede-e6526486bf91"
 
 # 本地开发配置
 [vars]
