@@ -15,3 +15,4 @@ database_id = "a6b043f2-0849-4b62-bede-e6526486bf91"
 # 本地开发配置
 [vars]
 ENV = "development"
+USE_MOCK_DATA = "true"

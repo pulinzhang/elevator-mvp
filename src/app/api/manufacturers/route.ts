@@ -24,24 +24,33 @@ let mockManufacturersData = [...mockManufacturers];
 let nextId = 5;
 
 export async function GET(request: Request, env: any) {
-  const USE_MOCK_DATA = shouldUseMockData();
-  const hasDB = !USE_MOCK_DATA && !!env.DB;
+  const useMock = env.USE_MOCK_DATA === "true";
   
   try {
-    if (hasDB) {
-      const result = await env.DB.prepare('SELECT * FROM manufacturers ORDER BY id').all();
-      const rows = result.results || [];
-      return new Response(JSON.stringify({ rows }), {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' },
-      });
-    } else {
-      // Use mock data
+    debugger
+    if (useMock) {
+      console.log('manufacturers from useMock', mockManufacturersData);
       return new Response(JSON.stringify(mockManufacturersData), {
         status: 200,
         headers: { 'Content-Type': 'application/json' },
       });
     }
+
+    if (!env.DB) {
+      console.log('manufacturers: no DB, using mock');
+      return new Response(JSON.stringify(mockManufacturersData), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    const result = await env.DB.prepare('SELECT * FROM manufacturers ORDER BY id').all();
+    const rows = result.results || [];
+    console.log('manufacturers from DB:', rows);
+    return new Response(JSON.stringify(rows), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    });
   } catch (error) {
     const errorMsg = error instanceof Error ? error.message : String(error);
     console.error('[manufacturers] Error:', errorMsg);
