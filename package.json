@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build && npx @cloudflare/next-on-pages",
-    "preview": "npx @cloudflare/next-on-pages --watch",
+    "build": "next build",
     "deploy": "npm run build && npx @cloudflare/next-on-pages deploy",
+    "preview": "npx @cloudflare/next-on-pages --watch",
     "d1:local:create": "wrangler d1 create elevator-db --local",
     "d1:local:init": "wrangler d1 execute elevator-db --local --file=schema.sql",
     "d1:local:reset": "wrangler d1 execute elevator-db --local --file=schema.sql --force",
@@ -24,6 +24,7 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.3.4",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
