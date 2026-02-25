@@ -5,8 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "preview": "npx @cloudflare/next-on-pages",
-    "deploy": "npm run build && npx @cloudflare/next-on-pages",
+    "preview": "npx @cloudflare/next-on-pages --watch",
+    "deploy": "npm run build && npx @cloudflare/next-on-pages deploy",
     "d1:local:create": "wrangler d1 create elevator-db --local",
     "d1:local:init": "wrangler d1 execute elevator-db --local --file=schema.sql",
     "d1:local:reset": "wrangler d1 execute elevator-db --local --file=schema.sql --force",
