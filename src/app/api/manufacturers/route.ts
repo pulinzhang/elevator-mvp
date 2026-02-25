@@ -45,7 +45,16 @@ export async function GET(request: Request, env: any) {
   } catch (error) {
     const errorMsg = error instanceof Error ? error.message : String(error);
     console.error('[manufacturers] Error:', errorMsg);
-    return new Response(JSON.stringify({ error: 'Internal server error', details: errorMsg }), {
+    // 在开发/调试时返回详细信息
+    return new Response(JSON.stringify({ 
+      error: 'Internal server error', 
+      details: errorMsg,
+      debug: {
+        hasEnv: !!env,
+        hasDB: !!env?.DB,
+        envKeys: env ? Object.keys(env).filter(k => !k.startsWith('_')) : []
+      }
+    }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     });
