@@ -15,32 +15,31 @@ let mockManufacturersData = [...mockManufacturers];
 let nextId = 5;
 
 export async function GET(request: Request, env: any) {
-  console.log('[manufacturers] GET called');
-  console.log('[manufacturers] USE_MOCK_DATA:', USE_MOCK_DATA);
-  console.log('[manufacturers] env.DB:', env.DB);
+  const debug = {
+    USE_MOCK_DATA,
+    hasDB: !!env.DB,
+    dbType: typeof env.DB,
+  };
+  console.log('[manufacturers] debug:', debug);
   
   try {
     if (!USE_MOCK_DATA && env.DB) {
-      console.log('[manufacturers] Querying DB...');
       const result = await env.DB.prepare('SELECT * FROM manufacturers ORDER BY id').all();
-      console.log('[manufacturers] DB result:', result);
       const rows = result.results || [];
-      console.log('[manufacturers] rows:', rows);
-      return new Response(JSON.stringify(rows), {
+      return new Response(JSON.stringify({ debug, rows }), {
         status: 200,
         headers: { 'Content-Type': 'application/json' },
       });
     } else {
-      // Use mock data
-      console.log('[manufacturers] Using mock data');
-      return new Response(JSON.stringify(mockManufacturersData), {
+      return new Response(JSON.stringify({ debug, mock: mockManufacturersData }), {
         status: 200,
         headers: { 'Content-Type': 'application/json' },
       });
     }
   } catch (error) {
-    console.error('[manufacturers] Error:', error);
-    return new Response(JSON.stringify({ error: 'Internal server error', details: String(error) }), {
+    const errorMsg = error instanceof Error ? error.message : String(error);
+    console.error('[manufacturers] Error:', errorMsg);
+    return new Response(JSON.stringify({ debug, error: errorMsg }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     });
