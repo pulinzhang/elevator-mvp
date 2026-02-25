@@ -100,6 +100,7 @@ elevator-mvp/
 │       ├── pricing/         # Pricing calculator page
 │       │   └── page.tsx
 │       └── page.tsx         # Homepage
+├── open-next.config.ts       # @opennextjs/cloudflare config
 ├── schema.sql               # Database schema
 ├── seed.sql                 # Demo data
 ├── wrangler.toml            # Cloudflare configuration
@@ -121,31 +122,62 @@ elevator-mvp/
 | Command | Description |
 |---------|-------------|
 | `npm run dev` | Start development server |
-| `npm run build` | Build for production |
-| `npm run preview` | Preview Cloudflare deployment |
+| `npm run build` | Build Next.js for production |
+| `npm run build:cf` | Build for Cloudflare Pages |
+| `npm run preview` | Preview Cloudflare deployment locally |
 | `npm run deploy` | Deploy to Cloudflare Pages |
 | `npm run d1:local:init` | Initialize local D1 database |
 | `npm run d1:remote:init` | Initialize remote D1 database |
 
 ## Deployment to Cloudflare
 
-1. **Create D1 database**:
+### Important: Using @opennextjs/cloudflare
+
+This project uses `@opennextjs/cloudflare` for Cloudflare Pages deployment. The build process is:
+
+1. Cloudflare Pages runs `npx @opennextjs/cloudflare build`
+2. `@opennextjs/cloudflare` internally calls `npm run build` (which runs `next build`)
+3. `@opennextjs/cloudflare` packages the result for Cloudflare Workers
+
+**⚠️ Important:** Do NOT include `@opennextjs/cloudflare` in your `package.json` build script, otherwise it will cause an infinite build loop.
+
+### Cloudflare Pages Configuration
+
+In your Cloudflare Pages project settings:
+
+- **Build command:** `npx @opennextjs/cloudflare build`
+- **Output directory:** (leave empty or set to `.open-next/assets`)
+
+### Local Build & Deploy
+
+1. **Build for Cloudflare:**
    ```bash
-   wrangler d1 create elevator-db
+   npm run build:cf
    ```
 
-2. **Update wrangler.toml**:
-   Replace `database_id` with your actual D1 database ID.
-
-3. **Initialize remote database**:
-   ```bash
-   npm run d1:remote:init
-   ```
-
-4. **Deploy**:
+2. **Deploy to Cloudflare:**
    ```bash
    npm run deploy
    ```
+
+Or combine them:
+```bash
+npm run build:cf && npm run deploy
+```
+
+### Create D1 Database (first time only)
+
+```bash
+wrangler d1 create elevator-db
+```
+
+Then update `wrangler.toml` with the new `database_id`.
+
+### Initialize Remote Database
+
+```bash
+npm run d1:remote:init
+```
 
 ## API Endpoints
 
@@ -177,49 +209,30 @@ MIT License
 
 ## Troubleshooting
 
-### Cloudflare Pages Deployment Issues
+### 1. Infinite Build Loop
 
-During deployment to Cloudflare Pages, you may encounter various issues. Here are the common problems and solutions:
+**Error:** Build command runs infinitely without completing.
 
-#### 1. "Missing entry-point to Worker script or to assets directory"
+**Cause:** The `package.json` build script includes `@opennextjs/cloudflare build`, causing recursive execution.
+
+**Solution:** Set your `package.json` build script to just `next build`:
+
+```json
+"build": "next build"
+```
+
+Then in Cloudflare Pages, set the build command to `npx @opennextjs/cloudflare build`.
+
+### 2. Missing open-next.config.ts
 
 **Error:**
 ```
-✘ [ERROR] Missing entry-point to Worker script or to assets directory
+? Missing required `open-next.config.ts` file, do you want to create one?
 ```
 
-**Cause:** The `wrangler deploy` command doesn't know where to find the built files.
+**Solution:** Make sure `open-next.config.ts` is committed to your Git repository. Cloudflare Pages builds from your Git repository.
 
-**Solution:** Add the `[assets]` configuration to `wrangler.toml`:
-
-```toml
-[assets]
-directory = ".vercel/output/static/_worker.js"
-```
-
-#### 2. Build command runs in infinite loop
-
-**Cause:** Using `npx @cloudflare/next-on-pages` inside the build command causes recursive execution.
-
-**Solution:**
-- Set build command to just: `npm install && npm run build`
-- Set output directory to: `.vercel/output/static/_worker.js`
-
-#### 3. wrangler deploy vs wrangler pages deploy
-
-**Note:** Cloudflare Pages automatically detects the framework (Next.js) and runs `@cloudflare/next-on-pages` internally. You don't need to include it in your build command.
-
-**Working configuration in Cloudflare Pages:**
-- Build command: `npm install && npm run build`
-- Output directory: `.vercel/output/static/_worker.js`
-
-The platform will automatically:
-1. Run `npm install`
-2. Run `npm run build` (which runs `next build`)
-3. Process the output with `@cloudflare/next-on-pages`
-4. Deploy using `wrangler deploy`
-
-#### 4. D1 Database binding not found
+### 3. D1 Database Binding Not Found
 
 **Error:**
 ```
@@ -235,7 +248,7 @@ database_name = "elevator-db"
 database_id = "your-database-id-here"
 ```
 
-#### 5. Using mock data locally
+### 4. Using Mock Data Locally
 
 For local development without D1, create a `.dev.vars` file:
 

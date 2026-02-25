@@ -5,6 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:cf": "npx @opennextjs/cloudflare build",
+    "preview": "npm run build:cf && wrangler dev",
     "deploy": "npx wrangler deploy",
     "d1:local:create": "wrangler d1 create elevator-db --local",
     "d1:local:init": "wrangler d1 execute elevator-db --local --file=schema.sql",

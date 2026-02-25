@@ -1,6 +1,7 @@
 export const runtime = 'edge';
 
-const USE_MOCK_DATA = process.env.USE_MOCK_DATA === 'true';
+// Default to using real database (not mock)
+const USE_MOCK_DATA = false;
 
 // Mock data for local development
 const mockOptions = [

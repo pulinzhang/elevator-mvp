@@ -2,8 +2,6 @@ import { NextResponse } from 'next/server';
 
 export const runtime = 'edge';
 
-const USE_MOCK_DATA = process.env.USE_MOCK_DATA === 'true';
-
 interface ModelRow {
   Manufacturer: string;
   "Model Code": string;
@@ -37,6 +35,8 @@ interface ExcelData {
 }
 
 export async function POST(request: Request, env: any) {
+  const USE_MOCK_DATA = env.USE_MOCK_DATA === 'true';
+  
   try {
     const body = await request.json();
     const { data } = body as { data: ExcelData };

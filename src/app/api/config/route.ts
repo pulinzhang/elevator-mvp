@@ -9,7 +9,7 @@ const mockConfig: ConfigItem[] = [
 ];
 
 export async function GET(request: Request, env: any) {
-  const useMock = process.env.USE_MOCK_DATA === "true";
+  const useMock = env.USE_MOCK_DATA === "true";
 
   try {
     if (useMock) {
@@ -26,7 +26,7 @@ export async function GET(request: Request, env: any) {
 }
 
 export async function POST(request: Request, env: any) {
-  const useMock = process.env.USE_MOCK_DATA === "true";
+  const useMock = env.USE_MOCK_DATA === "true";
   const body = await request.json();
   const { key, value } = body;
 
