@@ -1,9 +1,6 @@
 name = "elevator-mvp"
 compatibility_date = "2026-02-25"
 
-[assets]
-directory = ".vercel/output/static/_worker.js"
-
 # D1 数据库配置
 [[d1_databases]]
 binding = "DB"
