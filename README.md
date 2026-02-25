@@ -174,3 +174,73 @@ elevator-mvp/
 ## License
 
 MIT License
+
+## Troubleshooting
+
+### Cloudflare Pages Deployment Issues
+
+During deployment to Cloudflare Pages, you may encounter various issues. Here are the common problems and solutions:
+
+#### 1. "Missing entry-point to Worker script or to assets directory"
+
+**Error:**
+```
+✘ [ERROR] Missing entry-point to Worker script or to assets directory
+```
+
+**Cause:** The `wrangler deploy` command doesn't know where to find the built files.
+
+**Solution:** Add the `[assets]` configuration to `wrangler.toml`:
+
+```toml
+[assets]
+directory = ".vercel/output/static/_worker.js"
+```
+
+#### 2. Build command runs in infinite loop
+
+**Cause:** Using `npx @cloudflare/next-on-pages` inside the build command causes recursive execution.
+
+**Solution:**
+- Set build command to just: `npm install && npm run build`
+- Set output directory to: `.vercel/output/static/_worker.js`
+
+#### 3. wrangler deploy vs wrangler pages deploy
+
+**Note:** Cloudflare Pages automatically detects the framework (Next.js) and runs `@cloudflare/next-on-pages` internally. You don't need to include it in your build command.
+
+**Working configuration in Cloudflare Pages:**
+- Build command: `npm install && npm run build`
+- Output directory: `.vercel/output/static/_worker.js`
+
+The platform will automatically:
+1. Run `npm install`
+2. Run `npm run build` (which runs `next build`)
+3. Process the output with `@cloudflare/next-on-pages`
+4. Deploy using `wrangler deploy`
+
+#### 4. D1 Database binding not found
+
+**Error:**
+```
+Error: env.DB is not defined
+```
+
+**Solution:** Ensure your `wrangler.toml` has the correct D1 configuration:
+
+```toml
+[[d1_databases]]
+binding = "DB"
+database_name = "elevator-db"
+database_id = "your-database-id-here"
+```
+
+#### 5. Using mock data locally
+
+For local development without D1, create a `.dev.vars` file:
+
+```bash
+USE_MOCK_DATA=true
+```
+
+This will use in-memory mock data instead of the D1 database.
