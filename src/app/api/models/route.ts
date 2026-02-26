@@ -1,4 +1,4 @@
-export const runtime = 'edge';
+// 删除 edge runtime 以兼容 OpenNext
 
 // Use real database in production (set USE_MOCK_DATA=true in .dev.vars for local development)
 const USE_MOCK_DATA = typeof process !== 'undefined' && process.env?.USE_MOCK_DATA === 'true';

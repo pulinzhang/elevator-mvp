@@ -60,8 +60,15 @@ export default function PricingPage() {
 
   useEffect(() => {
     fetch("/api/manufacturers")
-      .then((res) => res.json())
-      .then((data) => setManufacturers(data))
+      .then((res) => {
+        console.log('res',res);
+        return res.json()
+      })
+      .then((data) => {
+        console.log('data',data);
+        setManufacturers(data)
+        return;
+      })
       .catch((error) => console.error("Failed to fetch manufacturers:", error));
   }, []);
 

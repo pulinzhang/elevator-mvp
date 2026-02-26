@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-export const runtime = 'edge';
+// 删除 edge runtime 以兼容 OpenNext
 
 interface ModelRow {
   Manufacturer: string;

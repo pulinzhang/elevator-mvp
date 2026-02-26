@@ -1,4 +1,4 @@
-export const runtime = 'edge';
+// 删除 edge runtime 以兼容 OpenNext
 
 // Check if we should use mock data
 // In local dev, set USE_MOCK_DATA=true in .dev.vars
@@ -35,7 +35,7 @@ export async function GET(request: Request, env: any) {
         headers: { 'Content-Type': 'application/json' },
       });
     }
-
+    console.log('env',env);
     if (!env.DB) {
       console.log('manufacturers: no DB, using mock');
       return new Response(JSON.stringify(mockManufacturersData), {

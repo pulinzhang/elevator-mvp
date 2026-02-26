@@ -1,4 +1,4 @@
-export const runtime = 'edge';
+// 删除 edge runtime 以兼容 OpenNext
 
 // Default to using real database (not mock)
 const USE_MOCK_DATA = false;
