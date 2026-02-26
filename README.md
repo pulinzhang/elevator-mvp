@@ -37,8 +37,8 @@ A professional elevator pricing and quotation system built with Next.js, designe
 
 ## Tech Stack
 
-- **Frontend**: Next.js 16 (App Router), React 19
-- **Styling**: Inline CSS, Tailwind CSS
+- **Frontend**: Next.js 15 (App Router), React 19
+- **Styling**: Tailwind CSS v4
 - **Database**: Cloudflare D1 (SQLite)
 - **Deployment**: Cloudflare Pages
 - **Build Tool**: Turbopack
@@ -64,6 +64,11 @@ A professional elevator pricing and quotation system built with Next.js, designe
    npm run dev
    ```
 
+   Or use wrangler (supports D1 binding, but requires setting up local database first):
+   ```bash
+   npx wrangler dev
+   ```
+
 3. **Open in browser**:
    ```
    http://localhost:3000
@@ -76,7 +81,10 @@ Create a `.dev.vars` file for local development:
 USE_MOCK_DATA=true
 ```
 
-When `USE_MOCK_DATA=true`, the app uses in-memory mock data instead of D1 database.
+**Important Notes:**
+- When `USE_MOCK_DATA=true`, the app uses in-memory mock data instead of D1 database
+- During local development, `env.DB` is `undefined` (D1 binding only works after deploying to Cloudflare)
+- After deploying to Cloudflare, D1 database binding will automatically activate and connect to the real database
 
 ## Project Structure
 
@@ -126,8 +134,12 @@ elevator-mvp/
 | `npm run build:cf` | Build for Cloudflare Pages |
 | `npm run preview` | Preview Cloudflare deployment locally |
 | `npm run deploy` | Deploy to Cloudflare Pages |
-| `npm run d1:local:init` | Initialize local D1 database |
-| `npm run d1:remote:init` | Initialize remote D1 database |
+| `npm run d1:local:create` | Create local D1 database |
+| `npm run d1:local:init` | Initialize local D1 database with schema |
+| `npm run d1:local:reset` | Reset local D1 database |
+| `npm run d1:remote:create` | Create remote D1 database |
+| `npm run d1:remote:init` | Initialize remote D1 database with schema |
+| `npm run d1:remote:reset` | Reset remote D1 database |
 
 ## Deployment to Cloudflare
 
@@ -168,7 +180,11 @@ npm run build:cf && npm run deploy
 ### Create D1 Database (first time only)
 
 ```bash
-wrangler d1 create elevator-db
+# Create remote D1 database
+npm run d1:remote:create
+
+# Or create local D1 database
+npm run d1:local:create
 ```
 
 Then update `wrangler.toml` with the new `database_id`.
@@ -178,6 +194,8 @@ Then update `wrangler.toml` with the new `database_id`.
 ```bash
 npm run d1:remote:init
 ```
+
+**Note:** The D1 database is already configured in `wrangler.toml` with `database_id` as `a6b043f2-0849-4b62-bede-e6526486bf91`.
 
 ## API Endpoints
 
@@ -257,3 +275,17 @@ USE_MOCK_DATA=true
 ```
 
 This will use in-memory mock data instead of the D1 database.
+
+### 5. env.DB is undefined (Local Development)
+
+**Symptom:** During local development, API logs show `env DB: undefined`, which is normal!
+
+**Cause:** D1 database binding only works after deploying to Cloudflare. During local development, `env.DB` defaults to `undefined`.
+
+**Solution:** Set `USE_MOCK_DATA=true` in `.dev.vars` file, or use `--remote` mode:
+
+```bash
+npx wrangler dev --remote
+```
+
+After deploying to Cloudflare, D1 binding will automatically work.
