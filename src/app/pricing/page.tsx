@@ -61,7 +61,8 @@ export default function PricingPage() {
   useEffect(() => {
     fetch("/api/manufacturers")
       .then((res) => res.json())
-      .then((data) => setManufacturers(data));
+      .then((data) => setManufacturers(data))
+      .catch((error) => console.error("Failed to fetch manufacturers:", error));
   }, []);
 
   useEffect(() => {
@@ -74,7 +75,8 @@ export default function PricingPage() {
           setOptions([]);
           setSelectedOptions([]);
           setResult(null);
-        });
+        })
+        .catch((error) => console.error("Failed to fetch models:", error));
     } else {
       setModels([]);
       setSelectedModel("");
@@ -92,7 +94,8 @@ export default function PricingPage() {
           setOptions(data);
           setSelectedOptions([]);
           setResult(null);
-        });
+        })
+        .catch((error) => console.error("Failed to fetch options:", error));
     } else {
       setOptions([]);
       setSelectedOptions([]);
